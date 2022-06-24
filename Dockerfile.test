@@ -1,0 +1,29 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV TZ=Europe/Prague
+
+RUN apt update -y
+
+RUN apt install -y software-properties-common
+RUN apt install -y wget
+RUN wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+RUN add-apt-repository 'deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/'
+
+RUN apt install -y r-base
+
+RUN apt install -y python3-pip
+RUN pip3 install planemo
+
+RUN apt install -y git
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 9 
+
+RUN Rscript -e "install.packages(c('rgl', 'mzR', 'doParallel', 'foreach', 'iterators', 'snow', 'gbm', 'e1071', 'randomForest', 'ROCR', 'ROCS', 'Rcpp', 'dplyr', 'tidyr', 'stringr', 'tibble'))"
+
+RUN apt install -y libnetcdf-dev
+RUN Rscript -e "install.packages('ncdf4')"
+RUN Rscript -e "install.packages('BiocManager')" 
+RUN Rscript -e "BiocManager::install('mzR')"
+
+RUN Rscript -e "install.packages('arrow')"
+
